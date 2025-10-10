@@ -1,7 +1,7 @@
 {
   "name": "sf-metadata-backup",
   "description": "Salesforce CLI plugin for metadata backup and rollback with dual-mode support (sf-orgdevmode-builds and standard)",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "author": "SF Backup Contributors",
   "bugs": "https://github.com/lebarion/sf-metadata-backup/issues",
   "dependencies": {
