@@ -354,5 +354,19 @@ If you absolutely must attempt a rollback:
 
 ---
 
+## 🙏 Acknowledgments
+
+This documentation and the insights within it are built on the collective wisdom of the Salesforce developer community.
+
+Special thanks to:
+
+- **[Tiago Nascimento](https://github.com/tiagonnascimento)** - For developing the sf-orgdevmode-builds plugin and providing invaluable insights on the realities and limitations of Salesforce rollbacks, deployment strategies, and the "metadata happy soup" challenge.
+
+- **Eric Gasparotto** - For encouraging the use of AI tools to tackle complex problems like this, demonstrating how modern development practices can accelerate innovation and problem-solving.
+
+The concepts of "compensatory rollback," "roll-forward strategies," and many of the impossible rollback scenarios documented here come from years of hard-won experience by Salesforce architects and developers who have learned these lessons in production environments.
+
+---
+
 **Remember:** This plugin is a tool to help with simple metadata reversions. It is NOT a guarantee of successful rollback. Always test, always have a plan B, and when possible, fix forward instead of rolling back.
 

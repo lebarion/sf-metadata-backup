@@ -424,9 +424,30 @@ For issues and feature requests, please visit:
 
 ---
 
+## Acknowledgments
+
+Special thanks to:
+
+- **[Tiago Nascimento](https://github.com/tiagonnascimento)** - For developing the [sf-orgdevmode-builds](https://github.com/tiagonnascimento/sf-orgdevmode-builds) plugin that inspired this work and for his valuable insights on Salesforce deployment strategies and rollback limitations.
+
+- **Eric Gasparotto** - For challenging me to leverage AI tools in creating this solution, demonstrating how modern development practices can accelerate problem-solving and innovation.
+
+This plugin stands on the shoulders of the Salesforce developer community's collective knowledge about the challenges and realities of metadata deployment and rollback.
+
+---
+
 ## Changelog
 
-### 1.0.0
+### 0.0.3
+- Added comprehensive rollback limitations documentation
+- Enhanced warnings and best practices
+- Improved safety guidelines
+
+### 0.0.2
+- Fixed orgdevmode command syntax (`sf builds deploy`)
+- Updated all documentation and examples
+
+### 0.0.1
 - Initial release
 - Dual mode support (orgdevmode and standard)
 - Create, rollback, and list commands
