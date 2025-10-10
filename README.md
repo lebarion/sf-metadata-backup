@@ -4,6 +4,69 @@
 
 Salesforce CLI plugin for comprehensive metadata backup and rollback with dual-mode support.
 
+## ⚠️ Important Notice
+
+> **🚧 This plugin is currently under testing and active development.**
+>
+> ### Understanding Salesforce Rollback Limitations
+>
+> **Rollbacks in Salesforce are fundamentally different from traditional code deployments.** Unlike version control systems where you can simply revert to a previous commit, Salesforce operates on a "metadata happy soup" model where the target environment already contains metadata that must coexist with new deployments.
+>
+> #### What This Plugin Does
+> This tool creates **compensatory rollback packages** - it generates new changes that attempt to counteract problematic deployments, rather than restoring the exact previous state. Think of it as "rolling forward with previous metadata" rather than a true rollback.
+>
+> #### Known Impossible Rollback Scenarios
+>
+> **This plugin CANNOT fully reverse:**
+> - ❌ **Deleting custom fields with data** - The original field data cannot be restored
+> - ❌ **Creating new custom fields** - Deploying the previous version won't remove the newly created field
+> - ❌ **Profile permission changes** - Old profile versions won't reverse permission grants/revocations
+> - ❌ **Sharing rules modifications** - Previous sharing rule versions don't undo new access patterns
+> - ❌ **Picklist value additions** - Cannot remove picklist values that are in use
+> - ❌ **Translation changes** - Language-specific metadata changes persist
+> - ❌ **Industries/Communications Cloud** - These have significantly more complexity and corner cases
+> - ❌ **Changes involving both metadata and datapacks** - Atomic deployments are impossible
+>
+> #### Recommended Approach: Roll Forward, Not Rollback
+>
+> Instead of relying on automatic rollbacks, we strongly recommend:
+>
+> 1. **Invest in Pipeline Quality**
+>    - Implement nightly builds with automated regression tests
+>    - Maintain comprehensive unit test coverage
+>    - Use sandbox environments for thorough testing
+>
+> 2. **Adopt Roll-Forward Strategy**
+>    - When issues occur, create new deployments that fix the problems
+>    - Treat "rollback" as another forward deployment with previous metadata
+>    - Document and track all changes, including compensatory deployments
+>
+> 3. **Use This Plugin As**
+>    - A safety net for simple metadata reversions
+>    - A tool to quickly generate recovery packages for review
+>    - Part of a broader disaster recovery strategy (not the only strategy)
+>
+> #### Safety Guidelines
+>
+> - ⚠️ This plugin does **NOT guarantee 100% effective rollback** in all scenarios
+> - ⚠️ Always test rollback procedures in a sandbox environment first
+> - ⚠️ **Review generated rollback packages manually** before deploying to production
+> - ⚠️ Have a manual rollback/recovery plan as a fallback
+> - ⚠️ **Always maintain additional backups** through your org's native backup solutions
+> - ⚠️ Use at your own risk in production environments
+>
+> #### Best Practices
+>
+> 1. ✅ Test thoroughly in sandbox environments before production use
+> 2. ✅ Maintain multiple backup strategies (don't rely solely on this plugin)
+> 3. ✅ Review generated rollback packages and understand what they will do
+> 4. ✅ Monitor the deployment process closely
+> 5. ✅ Document all rollback attempts and their outcomes
+> 6. ✅ Consider the "blast radius" - what else might be affected?
+> 7. ✅ When possible, fix forward rather than roll back
+>
+> 📖 **For a comprehensive understanding of rollback limitations, read [ROLLBACK_LIMITATIONS.md](ROLLBACK_LIMITATIONS.md)**
+
 ## Features
 
 - ✅ **Dual Mode Support**: Works with both `sf-orgdevmode-builds` (buildfile.json) and standard (package.xml) deployments

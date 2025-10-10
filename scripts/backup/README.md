@@ -2,6 +2,20 @@
 
 This system provides comprehensive backup and rollback capabilities for Salesforce deployments, following the [sf-orgdevmode-builds](https://github.com/tiagonnascimento/sf-orgdevmode-builds) plugin standards.
 
+## ⚠️ Critical Warning: Read Before Using
+
+> **Salesforce rollbacks are NOT like traditional code rollbacks.** This system creates **compensatory rollback packages**, not true reversions.
+>
+> - ❌ **Does NOT guarantee 100% effective rollback**
+> - ❌ Cannot restore data from deleted fields
+> - ❌ Cannot remove newly created metadata automatically
+> - ❌ Cannot fully reverse permission and sharing changes
+> - ❌ Industries/Communications Cloud significantly increases complexity
+>
+> **📖 REQUIRED READING:** [ROLLBACK_LIMITATIONS.md](../../ROLLBACK_LIMITATIONS.md) - Understand what this tool CAN and CANNOT do.
+>
+> **Best Practice:** Use roll-forward strategies and invest in pipeline quality rather than relying on automatic rollbacks.
+
 ## Overview
 
 The backup and rollback system consists of several scripts that work together to:
