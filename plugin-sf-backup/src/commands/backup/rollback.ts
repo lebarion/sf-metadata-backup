@@ -92,7 +92,7 @@ export default class BackupRollback extends SfCommand<BackupRollbackResult> {
         // Deploy using sf-orgdevmode-builds
         this.spinner.start(chalk.yellow('Deploying rollback using sf-orgdevmode-builds...'));
 
-        execSync(`sf deploy orgdevmode -b "${buildfilePath}" -u "${flags['target-org'].getUsername()}"`, {
+        execSync(`sf builds deploy -b "${buildfilePath}" -u "${flags['target-org'].getUsername()}"`, {
           cwd: rollbackDir,
           stdio: 'inherit',
         });

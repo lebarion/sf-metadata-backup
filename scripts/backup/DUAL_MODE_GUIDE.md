@@ -39,7 +39,7 @@ The system automatically detects which mode to use based on the file extension:
    cd backups/backup_*/rollback
    ./deploy-rollback.sh myProdOrg
    ```
-   - Uses `sf deploy orgdevmode` command
+   - Uses `sf builds deploy` command
    - Follows sf-orgdevmode-builds standards
 
 ### Example buildfile.json Input
@@ -178,7 +178,7 @@ The system automatically detects which mode to use based on the file extension:
 | **Input File** | buildfile.json | package.xml |
 | **Plugin Required** | sf-orgdevmode-builds | None |
 | **Multi-Package Support** | ✅ Yes | ❌ No (single package) |
-| **Rollback Command** | `sf deploy orgdevmode` | `sf project deploy start` |
+| **Rollback Command** | `sf builds deploy` | `sf project deploy start` |
 | **Rollback Format** | buildfile.json (builds array) | buildfile.json (steps array) |
 | **Use Case** | Complex deployments | Simple deployments |
 | **Setup Complexity** | Medium | Low |
@@ -208,7 +208,7 @@ You can use different modes for different deployments:
 ```bash
 # Monday: Deploy using orgdevmode
 ./backup-metadata.sh myOrg manifest/buildfile.json
-sf deploy orgdevmode -b manifest/buildfile.json -u myOrg
+sf builds deploy -b manifest/buildfile.json -u myOrg
 
 # Tuesday: Deploy using standard
 ./backup-metadata.sh myOrg manifest/hotfix-package.xml
@@ -279,7 +279,7 @@ jobs:
       - name: Deploy (Full)
         if: inputs.deployment_type == 'full-deployment'
         run: |
-          sf deploy orgdevmode -b manifest/buildfile.json -u myProdOrg
+          sf builds deploy -b manifest/buildfile.json -u myProdOrg
       
       - name: Deploy (Hotfix)
         if: inputs.deployment_type == 'hotfix'

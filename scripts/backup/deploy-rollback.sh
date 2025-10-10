@@ -84,7 +84,7 @@ fi
 
 # Deploy using sf-orgdevmode-builds
 echo -e "${YELLOW}Executing rollback builds...${NC}"
-sf deploy orgdevmode -b "buildfile.json" -u "$TARGET_ORG"
+sf builds deploy -b "buildfile.json" -u "$TARGET_ORG"
 
 echo ""
 echo -e "${GREEN}═══════════════════════════════════════════════════════════${NC}"

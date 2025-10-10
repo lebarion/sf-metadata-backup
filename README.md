@@ -98,7 +98,7 @@ sf backup rollback --target-org myProdOrg --backup-dir backups/backup_2025-01-10
 **What It Does:**
 
 1. Auto-detects rollback mode from buildfile.json
-2. For orgdevmode: Uses `sf deploy orgdevmode` with the plugin
+2. For orgdevmode: Uses `sf builds deploy` with the plugin
 3. For standard: Uses `sf project deploy start` commands
 4. Removes new metadata using destructive changes
 5. Restores old metadata from recovery manifest
@@ -194,7 +194,7 @@ sf backup create --target-org myProdOrg --manifest manifest/package.xml
 
 ```bash
 # Using sf-orgdevmode-builds
-sf deploy orgdevmode -b manifest/buildfile.json -u myProdOrg
+sf builds deploy -b manifest/buildfile.json -u myProdOrg
 
 # Using standard CLI
 sf project deploy start --manifest manifest/package.xml -u myProdOrg
@@ -262,7 +262,7 @@ jobs:
         run: sf backup create --target-org prod
       
       - name: Deploy
-        run: sf deploy orgdevmode -b manifest/buildfile.json -u prod
+        run: sf builds deploy -b manifest/buildfile.json -u prod
       
       - name: Rollback on Failure
         if: failure()
@@ -287,7 +287,7 @@ deploy:
   dependencies:
     - backup
   script:
-    - sf deploy orgdevmode -b manifest/buildfile.json -u $PROD_ORG
+    - sf builds deploy -b manifest/buildfile.json -u $PROD_ORG
   when: on_success
 
 rollback:

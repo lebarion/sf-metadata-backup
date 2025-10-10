@@ -44,7 +44,7 @@ cd scripts/backup
 
 ```bash
 # Using sf-orgdevmode-builds
-sf deploy orgdevmode -b manifest/buildfile.json -u <your-org-alias>
+sf builds deploy -b manifest/buildfile.json -u <your-org-alias>
 
 # OR using standard CLI
 sf project deploy start --manifest manifest/package.xml -u <your-org-alias>
@@ -163,7 +163,7 @@ The generated rollback buildfile follows sf-orgdevmode-builds standards:
 
 - name: Deploy Changes
   run: |
-    sf deploy orgdevmode -b manifest/buildfile.json -u ${{ secrets.PROD_ORG_ALIAS }}
+    sf builds deploy -b manifest/buildfile.json -u ${{ secrets.PROD_ORG_ALIAS }}
 
 - name: Rollback on Failure
   if: failure()

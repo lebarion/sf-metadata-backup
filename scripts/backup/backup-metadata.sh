@@ -211,7 +211,7 @@ echo "Target Org: $TARGET_ORG"
 echo ""
 
 # Deploy using sf-orgdevmode-builds
-sf deploy orgdevmode -b "${SCRIPT_DIR}/buildfile.json" -u "$TARGET_ORG"
+sf builds deploy -b "${SCRIPT_DIR}/buildfile.json" -u "$TARGET_ORG"
 
 echo ""
 echo "Rollback deployment completed!"

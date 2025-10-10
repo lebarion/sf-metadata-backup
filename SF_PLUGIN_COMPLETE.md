@@ -281,7 +281,7 @@ All documentation is in `plugin-sf-backup/`:
 sf backup create --target-org myProdOrg
 
 # 2. Deploy
-sf deploy orgdevmode -b manifest/buildfile.json -u myProdOrg
+sf builds deploy -b manifest/buildfile.json -u myProdOrg
 
 # 3. If issues, rollback
 sf backup rollback --target-org myProdOrg --backup-dir backups/backup_2025-01-10T14-30-22
@@ -314,7 +314,7 @@ sf backup rollback --target-org myProdOrg --backup-dir backups/backup_*
   run: sf backup create --target-org ${{ secrets.PROD_ORG }}
 
 - name: Deploy
-  run: sf deploy orgdevmode -b manifest/buildfile.json -u ${{ secrets.PROD_ORG }}
+  run: sf builds deploy -b manifest/buildfile.json -u ${{ secrets.PROD_ORG }}
 
 - name: Rollback on Failure
   if: failure()
@@ -333,7 +333,7 @@ backup:
 
 deploy:
   script:
-    - sf deploy orgdevmode -b manifest/buildfile.json -u $PROD_ORG
+    - sf builds deploy -b manifest/buildfile.json -u $PROD_ORG
 
 rollback:
   when: on_failure

@@ -187,7 +187,7 @@ sf plugins link  # Link for development
 sf backup create --target-org myProdOrg
 
 # 2. Deploy changes
-sf deploy orgdevmode -b manifest/buildfile.json -u myProdOrg
+sf builds deploy -b manifest/buildfile.json -u myProdOrg
 
 # 3. If something goes wrong, list backups
 sf backup list

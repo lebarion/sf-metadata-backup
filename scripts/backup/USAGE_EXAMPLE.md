@@ -79,7 +79,7 @@ Backup Archive: /path/to/backups/backup_20250110_143022.tar.gz
 
 ```bash
 # Option A: Deploy using sf-orgdevmode-builds
-sf deploy orgdevmode -b manifest/buildfile.json -u myProdOrg
+sf builds deploy -b manifest/buildfile.json -u myProdOrg
 
 # Option B: Deploy using standard CLI
 sf project deploy start --manifest manifest/package.xml -u myProdOrg
@@ -166,7 +166,7 @@ jobs:
       
       - name: Deploy Changes
         run: |
-          sf deploy orgdevmode -b manifest/buildfile.json -u myProdOrg
+          sf builds deploy -b manifest/buildfile.json -u myProdOrg
       
       - name: Rollback on Failure
         if: failure()
@@ -206,7 +206,7 @@ deploy_production:
   dependencies:
     - backup_production
   script:
-    - sf deploy orgdevmode -b manifest/buildfile.json -u $PROD_ORG_ALIAS
+    - sf builds deploy -b manifest/buildfile.json -u $PROD_ORG_ALIAS
   only:
     - main
 
@@ -327,7 +327,7 @@ Your `buildfile.json`:
 
 **Your deployment failed midway:**
 ```bash
-sf deploy orgdevmode -b manifest/buildfile.json -u myProdOrg
+sf builds deploy -b manifest/buildfile.json -u myProdOrg
 # ERROR: Deployment failed at package 2/3
 ```
 
@@ -405,13 +405,13 @@ vi buildfile.json
 ./backup-metadata.sh myProdOrg manifest/buildfile-package1.json
 
 # Deploy package 1
-sf deploy orgdevmode -b manifest/buildfile-package1.json -u myProdOrg
+sf builds deploy -b manifest/buildfile-package1.json -u myProdOrg
 
 # Backup for package 2
 ./backup-metadata.sh myProdOrg manifest/buildfile-package2.json
 
 # Deploy package 2
-sf deploy orgdevmode -b manifest/buildfile-package2.json -u myProdOrg
+sf builds deploy -b manifest/buildfile-package2.json -u myProdOrg
 ```
 
 ## Best Practices

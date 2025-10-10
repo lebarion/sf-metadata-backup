@@ -137,7 +137,7 @@ sf backup rollback --target-org myOrg --backup-dir backups/backup_* --no-confirm
 sf backup create --target-org myProdOrg
 
 # 2. Deploy your changes
-sf deploy orgdevmode -b manifest/buildfile.json -u myProdOrg
+sf builds deploy -b manifest/buildfile.json -u myProdOrg
 
 # 3. If something goes wrong - rollback
 sf backup list  # Find your backup

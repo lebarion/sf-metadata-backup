@@ -84,7 +84,7 @@ The system automatically detects which mode to use based on the file extension:
 ### 3. **deploy-rollback.sh** - Deployment Scripts
 **Changes:**
 - Two versions generated based on mode:
-  - **orgdevmode**: Uses `sf deploy orgdevmode`
+  - **orgdevmode**: Uses `sf builds deploy`
   - **standard**: Uses `sf project deploy start`
 - Standard mode has explicit two-step process
 - Better error handling and skipping of empty steps
@@ -150,7 +150,7 @@ cd scripts/backup
 ./backup-metadata.sh myOrg manifest/buildfile.json
 
 # 2. Deploy
-sf deploy orgdevmode -b manifest/buildfile.json -u myOrg
+sf builds deploy -b manifest/buildfile.json -u myOrg
 
 # 3. Rollback (if needed)
 cd backups/backup_*/rollback
@@ -159,7 +159,7 @@ cd backups/backup_*/rollback
 
 **Rollback uses plugin:**
 ```bash
-sf deploy orgdevmode -b buildfile.json -u myOrg
+sf builds deploy -b buildfile.json -u myOrg
 ```
 
 ## 📊 Comparison Matrix
@@ -169,7 +169,7 @@ sf deploy orgdevmode -b buildfile.json -u myOrg
 | **Input** | buildfile.json | package.xml |
 | **Plugin Required** | ✅ Yes (sf-orgdevmode-builds) | ❌ No |
 | **Multi-Package** | ✅ Yes | ❌ No |
-| **Rollback Command** | sf deploy orgdevmode | sf project deploy start |
+| **Rollback Command** | sf builds deploy | sf project deploy start |
 | **Setup Complexity** | Medium | Low |
 | **Best For** | Complex deployments | Simple/hotfix deployments |
 
@@ -292,7 +292,7 @@ cd scripts/backup
 ./backup-metadata.sh myOrg manifest/buildfile.json
 
 # 3. Deploy
-sf deploy orgdevmode -b manifest/buildfile.json -u myOrg
+sf builds deploy -b manifest/buildfile.json -u myOrg
 
 # 4. Rollback if needed
 cd ../../backups/backup_*/rollback
