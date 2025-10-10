@@ -1,0 +1,23 @@
+{
+  "name": "salesforce-backup-rollback",
+  "version": "1.0.0",
+  "description": "Salesforce metadata backup and rollback system",
+  "scripts": {
+    "setup": "npm install",
+    "test": "node test-scripts.js"
+  },
+  "dependencies": {
+    "xml2js": "^0.6.2"
+  },
+  "keywords": [
+    "salesforce",
+    "backup",
+    "rollback",
+    "metadata",
+    "sfdx",
+    "sf"
+  ],
+  "author": "",
+  "license": "ISC"
+}
+

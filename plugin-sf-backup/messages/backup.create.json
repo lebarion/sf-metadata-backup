@@ -1,0 +1,15 @@
+{
+  "summary": "Create a backup of Salesforce metadata before deployment",
+  "description": "Creates a comprehensive backup of metadata that will be deployed. Supports both sf-orgdevmode-builds (buildfile.json) and standard (package.xml) deployment modes. The backup includes retrieved metadata, recovery manifests, and destructive changes for rollback.",
+  "examples": [
+    "<%= config.bin %> <%= command.id %> --target-org myProdOrg",
+    "<%= config.bin %> <%= command.id %> --target-org myProdOrg --manifest manifest/buildfile.json",
+    "<%= config.bin %> <%= command.id %> --target-org myProdOrg --manifest manifest/package.xml",
+    "<%= config.bin %> <%= command.id %> --target-org myProdOrg --manifest manifest/hotfix.xml --no-compress"
+  ],
+  "flags.target-org.summary": "Salesforce org to backup metadata from",
+  "flags.manifest.summary": "Path to buildfile.json or package.xml (auto-detects mode from extension)",
+  "flags.backup-dir.summary": "Directory to store backups (default: backups)",
+  "flags.no-compress.summary": "Skip compression of backup into tar.gz archive"
+}
+

@@ -1,0 +1,10 @@
+{
+  "summary": "List all available backups",
+  "description": "Displays a list of all backups in the backups directory, including timestamp, deployment mode, size, and archive status.",
+  "examples": [
+    "<%= config.bin %> <%= command.id %>",
+    "<%= config.bin %> <%= command.id %> --backup-dir custom/backups"
+  ],
+  "flags.backup-dir.summary": "Directory containing backups (default: backups)"
+}
+

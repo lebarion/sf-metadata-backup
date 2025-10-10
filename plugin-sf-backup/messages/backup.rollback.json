@@ -1,0 +1,13 @@
+{
+  "summary": "Rollback a deployment using a previously created backup",
+  "description": "Deploys the rollback package created by 'sf backup create'. The rollback process removes new metadata and restores the previous state. Supports both sf-orgdevmode-builds and standard deployment modes automatically.",
+  "examples": [
+    "<%= config.bin %> <%= command.id %> --target-org myProdOrg --backup-dir backups/backup_2025-01-10T14-30-22",
+    "<%= config.bin %> <%= command.id %> --target-org myProdOrg --backup-dir backups/backup_2025-01-10T14-30-22/rollback",
+    "<%= config.bin %> <%= command.id %> --target-org myProdOrg --backup-dir backups/backup_2025-01-10T14-30-22 --no-confirm"
+  ],
+  "flags.target-org.summary": "Salesforce org to rollback deployment to",
+  "flags.backup-dir.summary": "Path to backup directory or rollback subdirectory",
+  "flags.no-confirm.summary": "Skip confirmation prompt before rollback"
+}
+

@@ -1,0 +1,3 @@
+Select Id,Name FROM Linha__c WHERE Name IN ('KZ',        'KG',        'KI',        'KT',        'KS',        'KB',        'CR',        'KL',        'KR',        'KD',        'CR',        'F',        'DH',        'KV',        'KO')
+
+Select Id, DeveloperName FROM RecordType Where DeveloperName IN ('KO', 'KV', 'COLD', 'COOKER', 'WET', 'ARCON', 'MWV', 'LE')

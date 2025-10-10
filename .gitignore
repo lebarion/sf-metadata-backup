@@ -1,0 +1,47 @@
+# Node modules
+node_modules/
+package-lock.json
+
+# Build output
+lib/
+dist/
+*.oclif.manifest.json
+
+# Backup directories
+backups/
+*.tar.gz
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Environment
+.env
+.env.*
+
+# Salesforce
+.sfdx/
+.sf/
+.localdevserver/
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# Temporary files
+tmp/
+temp/
+
