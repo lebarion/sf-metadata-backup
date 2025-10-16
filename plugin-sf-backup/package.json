@@ -1,7 +1,7 @@
 {
   "name": "sf-metadata-backup",
   "description": "Salesforce CLI plugin for metadata backup and rollback with dual-mode support (sf-orgdevmode-builds and standard)",
-  "version": "0.0.4",
+  "version": "0.1.0",
   "author": "SF Backup Contributors",
   "bugs": "https://github.com/lebarion/sf-metadata-backup/issues",
   "dependencies": {
@@ -71,6 +71,7 @@
     "lint": "wireit",
     "postpack": "sf-clean --ignore-signing-artifacts",
     "prepack": "sf-prepack",
+    "prepack_disabled": "sf-prepack",
     "prepare": "sf-install",
     "test": "wireit",
     "test:nuts": "mocha test/nuts/**/*.nut.ts --parallel --timeout 600000",
