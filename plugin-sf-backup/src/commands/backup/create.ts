@@ -1,3 +1,9 @@
+/*
+ * Copyright (c) 2023, salesforce.com, inc.
+ * All rights reserved.
+ * Licensed under the BSD 3-Clause license.
+ * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
+ */
 import { fileURLToPath } from 'node:url';
 import { execSync } from 'node:child_process';
 import * as path from 'node:path';
@@ -83,37 +89,37 @@ export default class BackupCreate extends SfCommand<BackupCreateResult> {
     try {
       // Step 1: Parse or copy manifest
       this.spinner.start(chalk.yellow('[1/6] Processing manifest...'));
-      const combinedManifest = await this.processManifest(manifestSource, backupDir, mode);
+      const combinedManifest = BackupCreate.processManifest(manifestSource, backupDir, mode);
       this.spinner.stop(chalk.green('✓'));
 
       // Step 2: Retrieve metadata from org
       this.spinner.start(chalk.yellow('[2/6] Retrieving metadata from target org...'));
-      await this.retrieveMetadata(combinedManifest, metadataDir, flags['target-org'].getUsername()!);
+      this.retrieveMetadata(combinedManifest, metadataDir, flags['target-org'].getUsername()!);
       this.spinner.stop(chalk.green('✓'));
 
       // Step 3: Generate recovery manifest
       this.spinner.start(chalk.yellow('[3/6] Generating recovery manifest...'));
       const recoveryManifest = path.join(rollbackDir, 'recovery-package.xml');
-      await this.generateRecoveryManifest(metadataDir, recoveryManifest);
+      BackupCreate.generateRecoveryManifest(metadataDir, recoveryManifest);
       this.spinner.stop(chalk.green('✓'));
 
       // Step 4: Generate destructive changes
       this.spinner.start(chalk.yellow('[4/6] Generating destructive changes...'));
       const destructiveDir = path.join(rollbackDir, 'destructive');
-      await this.generateDestructiveChanges(combinedManifest, recoveryManifest, destructiveDir);
+      BackupCreate.generateDestructiveChanges(combinedManifest, recoveryManifest, destructiveDir);
       this.spinner.stop(chalk.green('✓'));
 
       // Step 5: Generate rollback buildfile
       this.spinner.start(chalk.yellow('[5/6] Generating rollback configuration...'));
       const rollbackBuildfile = path.join(rollbackDir, 'buildfile.json');
-      await this.generateRollbackBuildfile(recoveryManifest, destructiveDir, rollbackBuildfile, mode);
+      BackupCreate.generateRollbackBuildfile(recoveryManifest, destructiveDir, rollbackBuildfile, mode);
       this.spinner.stop(chalk.green('✓'));
 
       // Step 6: Compress backup (if enabled)
       let backupArchive = '';
       if (!flags['no-compress']) {
         this.spinner.start(chalk.yellow('[6/6] Compressing backup...'));
-        backupArchive = await this.compressBackup(backupDir);
+        backupArchive = BackupCreate.compressBackup(backupDir);
         this.spinner.stop(chalk.green('✓'));
       }
 
@@ -129,7 +135,7 @@ export default class BackupCreate extends SfCommand<BackupCreateResult> {
       this.log(chalk.green('Deployment Mode:'), mode);
       this.log('');
       this.log(chalk.yellow('To deploy rollback:'));
-      this.log(`  sf backup rollback --backup-dir "${backupDir}" --target-org ${flags['target-org'].getUsername()}`);
+      this.log(`  sf backup rollback --backup-dir "${backupDir}" --target-org ${flags['target-org'].getUsername() ?? 'YOUR_ORG'}`);
       this.log('');
 
       return {
@@ -146,7 +152,8 @@ export default class BackupCreate extends SfCommand<BackupCreateResult> {
     }
   }
 
-  private async processManifest(manifestSource: string, backupDir: string, mode: string): Promise<string> {
+  // eslint-disable-next-line @typescript-eslint/member-ordering
+  private static processManifest(manifestSource: string, backupDir: string, mode: string): string {
     const combinedManifest = path.join(backupDir, 'combined-manifest.xml');
 
     if (mode === 'orgdevmode') {
@@ -171,7 +178,8 @@ export default class BackupCreate extends SfCommand<BackupCreateResult> {
     return combinedManifest;
   }
 
-  private async retrieveMetadata(manifest: string, targetDir: string, orgUsername: string): Promise<void> {
+  // eslint-disable-next-line @typescript-eslint/member-ordering
+  private retrieveMetadata(manifest: string, targetDir: string, orgUsername: string): void {
     try {
       // Retrieve creates a ZIP file in the target directory
       // Note: --ignore-conflicts cannot be used with --target-metadata-dir
@@ -220,17 +228,19 @@ export default class BackupCreate extends SfCommand<BackupCreateResult> {
     }
   }
 
-  private async generateRecoveryManifest(metadataDir: string, outputFile: string): Promise<void> {
+  // eslint-disable-next-line @typescript-eslint/member-ordering
+  private static generateRecoveryManifest(metadataDir: string, outputFile: string): void {
     const scriptDir = path.join(__dirname, '../../../scripts');
     const script = path.join(scriptDir, 'generate-recovery-manifest.js');
     execSync(`node "${script}" "${metadataDir}" "${outputFile}"`, { stdio: 'pipe' });
   }
 
-  private async generateDestructiveChanges(
+  // eslint-disable-next-line @typescript-eslint/member-ordering
+  private static generateDestructiveChanges(
     deploymentManifest: string,
     recoveryManifest: string,
     destructiveDir: string
-  ): Promise<void> {
+  ): void {
     fs.mkdirSync(destructiveDir, { recursive: true });
 
     const scriptDir = path.join(__dirname, '../../../scripts');
@@ -249,12 +259,13 @@ export default class BackupCreate extends SfCommand<BackupCreateResult> {
     fs.writeFileSync(path.join(destructiveDir, 'package.xml'), emptyPackage);
   }
 
-  private async generateRollbackBuildfile(
+  // eslint-disable-next-line @typescript-eslint/member-ordering
+  private static generateRollbackBuildfile(
     recoveryManifest: string,
     destructiveDir: string,
     outputFile: string,
     mode: string
-  ): Promise<void> {
+  ): void {
     const scriptDir = path.join(__dirname, '../../../scripts');
     const script = path.join(scriptDir, 'generate-rollback-buildfile.js');
     const destructiveChanges = path.join(destructiveDir, 'destructiveChanges.xml');
@@ -264,7 +275,8 @@ export default class BackupCreate extends SfCommand<BackupCreateResult> {
     });
   }
 
-  private async compressBackup(backupDir: string): Promise<string> {
+  // eslint-disable-next-line @typescript-eslint/member-ordering
+  private static compressBackup(backupDir: string): string {
     const backupArchive = `${backupDir}.tar.gz`;
     const backupName = path.basename(backupDir);
     const backupsDir = path.dirname(backupDir);

@@ -1,7 +1,13 @@
+/*
+ * Copyright (c) 2023, salesforce.com, inc.
+ * All rights reserved.
+ * Licensed under the BSD 3-Clause license.
+ * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
+ */
+import * as path from 'node:path';
+import * as fs from 'node:fs';
 import { SfCommand, Flags } from '@salesforce/sf-plugins-core';
 import { Messages } from '@salesforce/core';
-import * as path from 'path';
-import * as fs from 'fs';
 import chalk from 'chalk';
 
 Messages.importMessagesDirectoryFromMetaUrl(import.meta.url);
@@ -32,6 +38,19 @@ export default class BackupList extends SfCommand<BackupListResult> {
     }),
   };
 
+  private static formatSize(bytes: number): string {
+    const units = ['B', 'KB', 'MB', 'GB'];
+    let size = bytes;
+    let unitIndex = 0;
+
+    while (size >= 1024 && unitIndex < units.length - 1) {
+      size /= 1024;
+      unitIndex++;
+    }
+
+    return `${size.toFixed(2)} ${units[unitIndex]}`;
+  }
+
   public async run(): Promise<BackupListResult> {
     const { flags } = await this.parse(BackupList);
 
@@ -54,8 +73,8 @@ export default class BackupList extends SfCommand<BackupListResult> {
 
           if (fs.existsSync(buildfilePath)) {
             try {
-              const buildfile = JSON.parse(fs.readFileSync(buildfilePath, 'utf8'));
-              mode = buildfile.mode || 'orgdevmode';
+              const buildfile = JSON.parse(fs.readFileSync(buildfilePath, 'utf8')) as { mode?: string };
+              mode = buildfile.mode ?? 'orgdevmode';
             } catch {
               mode = 'unknown';
             }
@@ -68,7 +87,7 @@ export default class BackupList extends SfCommand<BackupListResult> {
             directory: entry,
             timestamp: entry.replace('backup_', ''),
             mode,
-            size: this.formatSize(this.getDirectorySize(backupPath)),
+            size: BackupList.formatSize(this.getDirectorySize(backupPath)),
             hasArchive,
           });
         }
@@ -135,19 +154,6 @@ export default class BackupList extends SfCommand<BackupListResult> {
     }
 
     return size;
-  }
-
-  private formatSize(bytes: number): string {
-    const units = ['B', 'KB', 'MB', 'GB'];
-    let size = bytes;
-    let unitIndex = 0;
-
-    while (size >= 1024 && unitIndex < units.length - 1) {
-      size /= 1024;
-      unitIndex++;
-    }
-
-    return `${size.toFixed(2)} ${units[unitIndex]}`;
   }
 }
 

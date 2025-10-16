@@ -454,4 +454,3 @@ This plugin stands on the shoulders of the Salesforce developer community's coll
 - Automatic mode detection
 - Compression support
 - CI/CD ready
-

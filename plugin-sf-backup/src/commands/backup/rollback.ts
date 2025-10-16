@@ -1,12 +1,26 @@
+/*
+ * Copyright (c) 2023, salesforce.com, inc.
+ * All rights reserved.
+ * Licensed under the BSD 3-Clause license.
+ * For full license text, see LICENSE.txt file in the repo root or https://opensource.org/licenses/BSD-3-Clause
+ */
+import { execSync } from 'node:child_process';
+import * as path from 'node:path';
+import * as fs from 'node:fs';
 import { SfCommand, Flags } from '@salesforce/sf-plugins-core';
 import { Messages } from '@salesforce/core';
-import { execSync } from 'child_process';
-import * as path from 'path';
-import * as fs from 'fs';
 import chalk from 'chalk';
 
 Messages.importMessagesDirectoryFromMetaUrl(import.meta.url);
 const messages = Messages.loadMessages('sf-metadata-backup', 'backup.rollback');
+
+type RollbackStep = {
+  name: string;
+  options: {
+    manifest: string;
+    'post-destructive-changes'?: string;
+  };
+};
 
 export type BackupRollbackResult = {
   success: boolean;
@@ -38,6 +52,7 @@ export default class BackupRollback extends SfCommand<BackupRollbackResult> {
     }),
   };
 
+  // eslint-disable-next-line complexity
   public async run(): Promise<BackupRollbackResult> {
     const { flags } = await this.parse(BackupRollback);
 
@@ -57,14 +72,18 @@ export default class BackupRollback extends SfCommand<BackupRollbackResult> {
     }
 
     // Read buildfile to determine mode
-    const buildfile = JSON.parse(fs.readFileSync(buildfilePath, 'utf8'));
-    const mode = buildfile.mode || 'orgdevmode';
+    const buildfile = JSON.parse(fs.readFileSync(buildfilePath, 'utf8')) as { 
+      mode?: string; 
+      builds?: unknown[]; 
+      steps?: RollbackStep[];
+    };
+    const mode = buildfile.mode ?? 'orgdevmode';
 
     this.log(chalk.blue('═══════════════════════════════════════════════════════════'));
     this.log(chalk.blue('  Salesforce Rollback Deployment'));
     this.log(chalk.blue('═══════════════════════════════════════════════════════════'));
     this.log(chalk.green('Rollback Directory:'), rollbackDir);
-    this.log(chalk.green('Target Org:'), flags['target-org'].getUsername());
+    this.log(chalk.green('Target Org:'), flags['target-org'].getUsername() ?? 'unknown');
     this.log(chalk.green('Mode:'), mode);
     this.log('');
 
@@ -92,16 +111,16 @@ export default class BackupRollback extends SfCommand<BackupRollbackResult> {
         // Deploy using sf-orgdevmode-builds
         this.spinner.start(chalk.yellow('Deploying rollback using sf-orgdevmode-builds...'));
 
-        execSync(`sf builds deploy -b "${buildfilePath}" -u "${flags['target-org'].getUsername()}"`, {
+        execSync(`sf builds deploy -b "${buildfilePath}" -u "${flags['target-org'].getUsername() ?? 'unknown'}"`, {
           cwd: rollbackDir,
           stdio: 'inherit',
         });
 
         this.spinner.stop(chalk.green('✓'));
-        stepsExecuted = buildfile.builds?.length || 0;
+        stepsExecuted = buildfile.builds?.length ?? 0;
       } else {
         // Deploy using standard CLI commands
-        const steps = buildfile.steps || [];
+        const steps: RollbackStep[] = buildfile.steps ?? [];
         const orgUsername = flags['target-org'].getUsername()!;
 
         for (let i = 0; i < steps.length; i++) {
@@ -109,7 +128,12 @@ export default class BackupRollback extends SfCommand<BackupRollbackResult> {
           this.spinner.start(chalk.yellow(`[${i + 1}/${steps.length}] ${step.name}...`));
 
           if (step.name === 'Remove new metadata') {
-            const destructiveChanges = path.join(rollbackDir, step.options['post-destructive-changes']);
+            const destructiveChangesPath = step.options['post-destructive-changes'];
+            if (!destructiveChangesPath) {
+              this.spinner.stop(chalk.yellow('⊘ (skipped - no destructive changes path)'));
+              continue;
+            }
+            const destructiveChanges = path.join(rollbackDir, destructiveChangesPath);
             const manifest = path.join(rollbackDir, step.options.manifest);
 
             if (fs.existsSync(destructiveChanges) && fs.readFileSync(destructiveChanges, 'utf8').includes('<members>')) {
