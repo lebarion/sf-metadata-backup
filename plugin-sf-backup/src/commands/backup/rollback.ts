@@ -123,11 +123,23 @@ export default class BackupRollback extends SfCommand<BackupRollbackResult> {
             }
           } else if (step.name === 'Restore old metadata') {
             const manifest = path.join(rollbackDir, step.options.manifest);
+            // Get backup directory (parent of rollback dir)
+            const backupDir = path.dirname(rollbackDir);
+            const metadataDir = path.join(backupDir, 'metadata');
 
             if (fs.existsSync(manifest) && fs.readFileSync(manifest, 'utf8').includes('<members>')) {
-              execSync(`sf project deploy start --manifest "${manifest}" --target-org "${orgUsername}" --ignore-warnings --wait 60`, {
-                stdio: 'inherit',
-              });
+              // Check if metadata directory exists and has content
+              if (fs.existsSync(metadataDir) && fs.readdirSync(metadataDir).length > 0) {
+                // Use only source-dir (cannot use both manifest and source-dir together)
+                execSync(
+                  `sf project deploy start --source-dir "${metadataDir}" --target-org "${orgUsername}" --ignore-warnings --wait 60`,
+                  { stdio: 'inherit' }
+                );
+              } else {
+                this.warn('Metadata directory is empty or does not exist');
+                this.spinner.stop(chalk.yellow('⊘ (skipped - no metadata files found)'));
+                continue;
+              }
             } else {
               this.spinner.stop(chalk.yellow('⊘ (skipped - no metadata to restore)'));
               continue;

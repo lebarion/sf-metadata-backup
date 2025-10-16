@@ -1,9 +1,16 @@
+import { fileURLToPath } from 'node:url';
+import { execSync } from 'node:child_process';
+import * as path from 'node:path';
+import * as fs from 'node:fs';
 import { SfCommand, Flags } from '@salesforce/sf-plugins-core';
 import { Messages } from '@salesforce/core';
-import { execSync } from 'child_process';
-import * as path from 'path';
-import * as fs from 'fs';
 import chalk from 'chalk';
+
+// ES modules equivalent of __dirname
+// eslint-disable-next-line no-underscore-dangle
+const __filename = fileURLToPath(import.meta.url);
+// eslint-disable-next-line no-underscore-dangle
+const __dirname = path.dirname(__filename);
 
 Messages.importMessagesDirectoryFromMetaUrl(import.meta.url);
 const messages = Messages.loadMessages('sf-metadata-backup', 'backup.create');
@@ -166,13 +173,50 @@ export default class BackupCreate extends SfCommand<BackupCreateResult> {
 
   private async retrieveMetadata(manifest: string, targetDir: string, orgUsername: string): Promise<void> {
     try {
+      // Retrieve creates a ZIP file in the target directory
+      // Note: --ignore-conflicts cannot be used with --target-metadata-dir
       execSync(
-        `sf project retrieve start --manifest "${manifest}" --target-org "${orgUsername}" --target-metadata-dir "${targetDir}" --wait 60 --ignore-conflicts`,
+        `sf project retrieve start --manifest "${manifest}" --target-org "${orgUsername}" --target-metadata-dir "${targetDir}" --wait 60`,
         { stdio: 'pipe' }
       );
+      
+      // Extract the unpackaged.zip file
+      const zipFile = path.join(targetDir, 'unpackaged.zip');
+      this.log(chalk.gray(`  Checking for ZIP file: ${zipFile}`));
+      
+      if (fs.existsSync(zipFile)) {
+        this.log(chalk.gray(`  ZIP file found, extracting...`));
+        // Extract to the same directory
+        execSync(`unzip -o -q "${zipFile}" -d "${targetDir}"`, { stdio: 'pipe' });
+        
+        // Remove the zip file after extraction
+        fs.unlinkSync(zipFile);
+        
+        // Move extracted files from unpackaged/ subdirectory to root using mv command
+        const unpackagedDir = path.join(targetDir, 'unpackaged');
+        if (fs.existsSync(unpackagedDir)) {
+          this.log(chalk.gray(`  Moving files from unpackaged/ to metadata/`));
+          // Use shell command to move all contents recursively
+          execSync(`mv "${unpackagedDir}"/* "${targetDir}/" 2>/dev/null || true`, { stdio: 'pipe' });
+          
+          // Remove empty unpackaged directory
+          execSync(`rm -rf "${unpackagedDir}"`, { stdio: 'pipe' });
+          
+          // Verify files were moved
+          const files = fs.readdirSync(targetDir);
+          this.log(chalk.gray(`  Metadata directory now has ${files.length} items`));
+        } else {
+          this.warn('Unpackaged directory not found after extraction');
+        }
+      } else {
+        this.warn(`ZIP file not found: ${zipFile}`);
+      }
     } catch (error) {
       // Ignore errors for non-existent metadata
       this.warn('Some metadata may not exist in target org');
+      if (error instanceof Error) {
+        this.log(chalk.gray(`  Error details: ${error.message}`));
+      }
     }
   }
 

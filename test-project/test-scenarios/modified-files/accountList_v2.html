@@ -1,0 +1,21 @@
+<template>
+    <lightning-card title="Account List (Enhanced)" icon-name="standard:account">
+        <div class="slds-m-around_medium">
+            <template if:true={accounts}>
+                <lightning-datatable
+                    key-field="Id"
+                    data={accounts}
+                    columns={columns}
+                    onrowselection={handleRowSelection}>
+                </lightning-datatable>
+            </template>
+            <template if:true={error}>
+                <div class="slds-text-color_error">
+                    <lightning-icon icon-name="utility:error" size="small"></lightning-icon>
+                    Error loading accounts: {error.body.message}
+                </div>
+            </template>
+        </div>
+    </lightning-card>
+</template>
+

@@ -1,0 +1,10 @@
+{
+  "manifestFiles": [
+    "manifest/phase1-classes.xml",
+    "manifest/phase2-objects.xml",
+    "manifest/phase3-components.xml"
+  ],
+  "orgDevMode": true,
+  "sourceApiVersion": "61.0"
+}
+

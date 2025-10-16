@@ -21,11 +21,11 @@ function generateRollbackBuildfile(recoveryManifest, destructiveChanges, outputF
     try {
         console.error(`Generating rollback buildfile (${mode} mode)...`);
         
-        // Determine relative paths from output file location
-        const outputDir = path.dirname(outputFile);
-        const recoveryManifestRel = path.relative(path.dirname(outputDir), recoveryManifest);
+        // Determine relative paths from rollback directory (where buildfile.json is located)
+        const rollbackDir = path.dirname(outputFile);
+        const recoveryManifestRel = path.relative(rollbackDir, recoveryManifest);
         const destructiveDir = path.dirname(destructiveChanges);
-        const destructiveDirRel = path.relative(path.dirname(outputDir), destructiveDir);
+        const destructiveDirRel = path.relative(rollbackDir, destructiveDir);
         
         // Check if files exist
         const hasRecoveryManifest = fs.existsSync(recoveryManifest);
@@ -40,7 +40,27 @@ function generateRollbackBuildfile(recoveryManifest, destructiveChanges, outputF
                 builds: []
             };
             
-            // Step 1: Deploy destructive changes (if any)
+            // Step 1: Deploy recovery metadata FIRST (restore old state)
+            if (hasRecoveryManifest) {
+                const recoveryXml = fs.readFileSync(recoveryManifest, 'utf8');
+                
+                // Check if recovery manifest has any metadata
+                if (recoveryXml.includes('<members>')) {
+                    console.error('Adding recovery metadata deployment step...');
+                    rollbackBuildfile.builds.push({
+                        type: 'metadata',
+                        manifestFile: recoveryManifestRel,
+                        testLevel: 'NoTestRun',
+                        timeout: '180',
+                        ignoreWarnings: true,
+                        disableTracking: true
+                    });
+                } else {
+                    console.error('No recovery metadata found (org had no existing metadata)');
+                }
+            }
+            
+            // Step 2: Deploy destructive changes SECOND (remove new metadata)
             if (hasDestructiveChanges) {
                 const destructiveXml = fs.readFileSync(destructiveChanges, 'utf8');
                 
@@ -58,26 +78,6 @@ function generateRollbackBuildfile(recoveryManifest, destructiveChanges, outputF
                     });
                 } else {
                     console.error('No destructive changes needed (no new metadata detected)');
-                }
-            }
-            
-            // Step 2: Deploy recovery metadata (if any)
-            if (hasRecoveryManifest) {
-                const recoveryXml = fs.readFileSync(recoveryManifest, 'utf8');
-                
-                // Check if recovery manifest has any metadata
-                if (recoveryXml.includes('<members>')) {
-                    console.error('Adding recovery metadata deployment step...');
-                    rollbackBuildfile.builds.push({
-                        type: 'metadata',
-                        manifestFile: recoveryManifestRel,
-                        testLevel: 'NoTestRun',
-                        timeout: '180',
-                        ignoreWarnings: true,
-                        disableTracking: true
-                    });
-                } else {
-                    console.error('No recovery metadata found (org had no existing metadata)');
                 }
             }
             
@@ -101,7 +101,27 @@ function generateRollbackBuildfile(recoveryManifest, destructiveChanges, outputF
                 steps: []
             };
             
-            // Step 1: Deploy destructive changes (if any)
+            // Step 1: Deploy recovery metadata FIRST (restore old state)
+            if (hasRecoveryManifest) {
+                const recoveryXml = fs.readFileSync(recoveryManifest, 'utf8');
+                
+                if (recoveryXml.includes('<members>')) {
+                    console.error('Adding recovery metadata deployment step...');
+                    rollbackBuildfile.steps.push({
+                        name: 'Restore old metadata',
+                        command: 'sf project deploy start',
+                        options: {
+                            manifest: recoveryManifestRel,
+                            'ignore-warnings': true,
+                            wait: 60
+                        }
+                    });
+                } else {
+                    console.error('No recovery metadata found (org had no existing metadata)');
+                }
+            }
+            
+            // Step 2: Deploy destructive changes SECOND (remove new metadata)
             if (hasDestructiveChanges) {
                 const destructiveXml = fs.readFileSync(destructiveChanges, 'utf8');
                 
@@ -119,26 +139,6 @@ function generateRollbackBuildfile(recoveryManifest, destructiveChanges, outputF
                     });
                 } else {
                     console.error('No destructive changes needed (no new metadata detected)');
-                }
-            }
-            
-            // Step 2: Deploy recovery metadata (if any)
-            if (hasRecoveryManifest) {
-                const recoveryXml = fs.readFileSync(recoveryManifest, 'utf8');
-                
-                if (recoveryXml.includes('<members>')) {
-                    console.error('Adding recovery metadata deployment step...');
-                    rollbackBuildfile.steps.push({
-                        name: 'Restore old metadata',
-                        command: 'sf project deploy start',
-                        options: {
-                            manifest: recoveryManifestRel,
-                            'ignore-warnings': true,
-                            wait: 60
-                        }
-                    });
-                } else {
-                    console.error('No recovery metadata found (org had no existing metadata)');
                 }
             }
             
